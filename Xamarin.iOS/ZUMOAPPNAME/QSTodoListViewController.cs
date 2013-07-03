@@ -100,12 +100,7 @@ namespace ZUMOAPPNAME
 			return UITableViewCellEditingStyle.Delete;
 		}
 
-		public override void CommitEditingStyle (UITableView tableView, UITableViewCellEditingStyle editingStyle, NSIndexPath indexPath)
-		{
-			CommitEditingStyleAsync (tableView, editingStyle, indexPath);
-		}
-
-		async public void CommitEditingStyleAsync (UITableView tableView, UITableViewCellEditingStyle editingStyle, NSIndexPath indexPath)
+		async public override void CommitEditingStyle (UITableView tableView, UITableViewCellEditingStyle editingStyle, NSIndexPath indexPath)
 		{
 			// Find item that was commited for editing (completed)
 			var item = todoService.Items [indexPath.Row];
@@ -120,15 +115,11 @@ namespace ZUMOAPPNAME
 			// Remove the row from the UITableView
 			tableView.DeleteRows (new [] { indexPath }, UITableViewRowAnimation.Top);
 		}
+
 		#endregion
 
 		#region UI Actions
-		partial void OnAdd (NSObject sender)
-		{
-			OnAddAsync ();
-		}
-
-		async void OnAddAsync ()
+		async partial void OnAdd (NSObject sender)
 		{
 			if (string.IsNullOrWhiteSpace (itemText.Text))
 				return;
@@ -143,10 +134,11 @@ namespace ZUMOAPPNAME
 			var index = todoService.Items.FindIndex (item => item.Id == newItem.Id);
 
 			TableView.InsertRows (new [] { NSIndexPath.FromItemSection (index, 0) },
-			                      UITableViewRowAnimation.Top);
+			UITableViewRowAnimation.Top);
 
 			itemText.Text = "";
 		}
+
 		#endregion
 
 		#region UITextFieldDelegate methods
