@@ -29,11 +29,11 @@ namespace ZUMOAPPNAME
 
 			if (row == null) {
 				var inflater = mContext.LayoutInflater;
-				row = inflater.Inflate(mLayoutResourceId, parent, false);
+				row = inflater.Inflate (mLayoutResourceId, parent, false);
 			}
 
 			row.Tag = currentItem;
-			CheckBox checkBox = (CheckBox) row.FindViewById(Resource.Id.checkToDoItem);
+			CheckBox checkBox = (CheckBox)row.FindViewById (Resource.Id.checkToDoItem);
 			checkBox.Text = currentItem.Text;
 			checkBox.Checked = false;
 			checkBox.Enabled = true;
@@ -41,7 +41,7 @@ namespace ZUMOAPPNAME
 			checkBox.SetOnCheckedChangeListener (new OnCheckedChangeWrapper ((buttonView, isChecked) => {
 				if (checkBox.Checked) {
 					if (mContext is ToDoActivity) {
-						((ToDoActivity) mContext).CheckItem (currentItem);
+						((ToDoActivity)mContext).CheckItem (currentItem);
 					}
 				}
 			}));
@@ -59,12 +59,10 @@ namespace ZUMOAPPNAME
 			}
 
 			#region IOnCheckedChangeListener implementation
-
 			public void OnCheckedChanged (CompoundButton buttonView, bool isChecked)
 			{
 				this.callback (buttonView, isChecked);
 			}
-
 			#endregion
 		}
 	}
