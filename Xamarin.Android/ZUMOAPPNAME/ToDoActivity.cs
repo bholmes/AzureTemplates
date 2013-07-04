@@ -172,29 +172,27 @@ namespace ZUMOAPPNAME
 
 		class ProgressFilter : IServiceFilter
 		{
-			long busyCount = 0;
+			int busyCount = 0;
 
 			public event Action<bool> BusyStateChange;
 			#region IServiceFilter implementation
-			public System.Threading.Tasks.Task<IServiceFilterResponse> Handle (IServiceFilterRequest request, IServiceFilterContinuation continuation)
+			public async System.Threading.Tasks.Task<IServiceFilterResponse> Handle (IServiceFilterRequest request, IServiceFilterContinuation continuation)
 			{
-				return HandleAsync (request, continuation);
-			}
-
-			public async System.Threading.Tasks.Task<IServiceFilterResponse> HandleAsync (IServiceFilterRequest request, IServiceFilterContinuation continuation)
-			{
-				if (Interlocked.Increment (ref this.busyCount) == 1 && this.BusyStateChange != null) {
+				// assumes always executes on UI thread
+				if (this.busyCount++ == 0 && this.BusyStateChange != null) {
 					this.BusyStateChange (true);
 				}
 
 				var response = await continuation.Handle (request);
 
-				if (Interlocked.Decrement (ref this.busyCount) == 0 && this.BusyStateChange != null) {
+				// assumes always executes on UI thread
+				if (--this.busyCount == 0 && this.BusyStateChange != null) {
 					this.BusyStateChange (false);
 				}
 
 				return response;
 			}
+
 			#endregion
 		}
 	}
