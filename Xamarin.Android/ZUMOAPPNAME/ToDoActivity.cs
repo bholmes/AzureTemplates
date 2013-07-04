@@ -1,12 +1,10 @@
 using System;
+using Android.OS;
 using Android.App;
-using Android.Content;
-using Android.Runtime;
 using Android.Views;
 using Android.Widget;
-using Android.OS;
 using Microsoft.WindowsAzure.MobileServices;
-using System.Threading;
+
 
 namespace ZUMOAPPNAME
 {
@@ -76,9 +74,12 @@ namespace ZUMOAPPNAME
 				// Load the items from the Mobile Service
 				RefreshItemsFromTable ();
 
-			} catch (Java.Net.MalformedURLException e) {
-				//TODO createAndShowDialog(new Exception("There was an error creating the Mobile Service. Verify the URL"), "Error");
+			} catch (Java.Net.MalformedURLException) {
+				CreateAndShowDialog (new Exception ("There was an error creating the Mobile Service. Verify the URL"), "Error");
+			} catch (Exception e) {
+				CreateAndShowDialog (e, "Error");
 			}
+
 
 		}
 
@@ -113,7 +114,7 @@ namespace ZUMOAPPNAME
 					mAdapter.Add (current);
 				}
 			} catch (Exception e) {
-				//TODO createAndShowDialog(exception, "Error");
+				CreateAndShowDialog (e, "Error");
 			}
 		}
 
@@ -135,7 +136,7 @@ namespace ZUMOAPPNAME
 					mAdapter.Remove (item);
 				}
 			} catch (Exception e) {
-				//TODO createAndShowDialog(exception, "Error");
+				CreateAndShowDialog (e, "Error");
 			}
 		}
 
@@ -164,10 +165,34 @@ namespace ZUMOAPPNAME
 					mAdapter.Add (item);
 				}
 			} catch (Exception e) {
-				//TODO createAndShowDialog(exception, "Error");
+				CreateAndShowDialog (e, "Error");
 			}
 
 			mTextNewToDo.Text = "";
+		}
+
+		/// <summary>
+		/// Creates a dialog and shows it
+		/// </summary>
+		/// <param name="exception">The exception to show in the dialog</param>
+		/// <param name="title">The dialog title</param>
+		void CreateAndShowDialog (Exception exception, String title)
+		{
+			CreateAndShowDialog (exception.Message, title);
+		}
+
+		/// <summary>
+		/// Creates a dialog and shows it
+		/// </summary>
+		/// <param name="message">The dialog message</param>
+		/// <param name="title">The dialog title</param>
+		void CreateAndShowDialog (string message, string title)
+		{
+			AlertDialog.Builder builder = new AlertDialog.Builder (this);
+
+			builder.SetMessage (message);
+			builder.SetTitle (title);
+			builder.Create ().Show ();
 		}
 
 		class ProgressFilter : IServiceFilter
@@ -175,6 +200,7 @@ namespace ZUMOAPPNAME
 			int busyCount = 0;
 
 			public event Action<bool> BusyStateChange;
+			
 			#region IServiceFilter implementation
 			public async System.Threading.Tasks.Task<IServiceFilterResponse> Handle (IServiceFilterRequest request, IServiceFilterContinuation continuation)
 			{

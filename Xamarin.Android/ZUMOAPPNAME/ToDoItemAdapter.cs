@@ -1,8 +1,8 @@
 using System;
-using Android.Widget;
-using Android.Content;
-using Android.Views;
 using Android.App;
+using Android.Views;
+using Android.Widget;
+
 
 namespace ZUMOAPPNAME
 {
