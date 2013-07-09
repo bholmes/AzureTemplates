@@ -14,19 +14,19 @@ namespace ZUMOAPPNAME
 	public class ToDoActivity : Activity
 	{
 		//Mobile Service Client reference
-		private MobileServiceClient mClient;
+		private MobileServiceClient client;
 
 		//Mobile Service Table used to access data
-		private IMobileServiceTable<ToDoItem> mToDoTable;
+		private IMobileServiceTable<ToDoItem> toDoTable;
 
 		//Adapter to sync the items list with the view
-		private ToDoItemAdapter mAdapter;
+		private ToDoItemAdapter adapter;
 
 		//EditText containing the "New ToDo" text
-		private EditText mTextNewToDo;
+		private EditText textNewToDo;
 
 		//Progress spinner to use for table operations
-		private ProgressBar mProgressBar;
+		private ProgressBar progressBar;
 
 		const string applicationURL = @"https://mobilltasky.azure-mobile.net/";
 		const string applicationKey = @"QFuPVQqUQNURoTUmsBCNkTJJTbumTe89";
@@ -40,36 +40,34 @@ namespace ZUMOAPPNAME
 			// Set our view from the "main" layout resource
 			SetContentView (Resource.Layout.Activity_To_Do);
 
-			mProgressBar = (ProgressBar)FindViewById (Resource.Id.loadingProgressBar);
+			progressBar = FindViewById<ProgressBar> (Resource.Id.loadingProgressBar);
 
 			// Initialize the progress bar
-			mProgressBar.Visibility = ViewStates.Gone;
+			progressBar.Visibility = ViewStates.Gone;
 
 			// Create ProgressFilter to handle busy state
 			var filter = new ProgressFilter ();
 			filter.BusyStateChange += (busy) => {
-				RunOnUiThread (() => {
-					if (mProgressBar != null) 
-						mProgressBar.Visibility = busy ? ViewStates.Visible : ViewStates.Gone;
-				});
+				if (progressBar != null) 
+					progressBar.Visibility = busy ? ViewStates.Visible : ViewStates.Gone;
 			};
 
 			try {
 				// Create the Mobile Service Client instance, using the provided
 				// Mobile Service URL and key
-				mClient = new MobileServiceClient (
+				client = new MobileServiceClient (
 					applicationURL,
 					applicationKey).WithFilter (filter);
 
 				// Get the Mobile Service Table instance to use
-				mToDoTable = mClient.GetTable <ToDoItem> ();
+				toDoTable = client.GetTable <ToDoItem> ();
 
-				mTextNewToDo = (EditText)FindViewById (Resource.Id.textNewToDo);
+				textNewToDo = FindViewById<EditText> (Resource.Id.textNewToDo);
 
 				// Create an adapter to bind the items with the view
-				mAdapter = new ToDoItemAdapter (this, Resource.Layout.Row_List_To_Do);
-				ListView listViewToDo = (ListView)FindViewById (Resource.Id.listViewToDo);
-				listViewToDo.Adapter = mAdapter;
+				adapter = new ToDoItemAdapter (this, Resource.Layout.Row_List_To_Do);
+				var listViewToDo = FindViewById<ListView> (Resource.Id.listViewToDo);
+				listViewToDo.Adapter = adapter;
 
 				// Load the items from the Mobile Service
 				RefreshItemsFromTable ();
@@ -86,7 +84,7 @@ namespace ZUMOAPPNAME
 		//Initializes the activity menu
 		public override bool OnCreateOptionsMenu (IMenu menu)
 		{
-			this.MenuInflater.Inflate (Resource.Menu.activity_main, menu);
+			MenuInflater.Inflate (Resource.Menu.activity_main, menu);
 			return true;
 		}
 
@@ -102,16 +100,15 @@ namespace ZUMOAPPNAME
 		//Refresh the list with the items in the Mobile Service Table
 		async void RefreshItemsFromTable ()
 		{
-
 			try {
 				// Get the items that weren't marked as completed and add them in the
 				// adapter
-				var list = await mToDoTable.Where (item => item.Complete == false).ToListAsync ();
+				var list = await toDoTable.Where (item => item.Complete == false).ToListAsync ();
 
-				mAdapter.Clear ();
+				adapter.Clear ();
 
 				foreach (ToDoItem current in list) {
-					mAdapter.Add (current);
+					adapter.Add (current);
 				}
 			} catch (Exception e) {
 				CreateAndShowDialog (e, "Error");
@@ -124,16 +121,16 @@ namespace ZUMOAPPNAME
 		/// <param name="item">The item to mark</param>
 		public async void CheckItem (ToDoItem item)
 		{
-			if (mClient == null) {
+			if (client == null) {
 				return;
 			}
 
 			// Set the item as completed and update it in the table
 			item.Complete = true;
 			try {
-				await mToDoTable.UpdateAsync (item);
+				await toDoTable.UpdateAsync (item);
 				if (item.Complete) {
-					mAdapter.Remove (item);
+					adapter.Remove (item);
 				}
 			} catch (Exception e) {
 				CreateAndShowDialog (e, "Error");
@@ -147,28 +144,28 @@ namespace ZUMOAPPNAME
 		[Java.Interop.Export()]
 		public async void AddItem (View view)
 		{
-			if (mClient == null || string.IsNullOrWhiteSpace (mTextNewToDo.Text)) {
+			if (client == null || string.IsNullOrWhiteSpace (textNewToDo.Text)) {
 				return;
 			}
 
 			// Create a new item
 			var item = new ToDoItem {
-				Text = mTextNewToDo.Text,
+				Text = textNewToDo.Text,
 				Complete = false
 			};
 
 			try {
 				// Insert the new item
-				await mToDoTable.InsertAsync (item);
+				await toDoTable.InsertAsync (item);
 
 				if (!item.Complete) {
-					mAdapter.Add (item);
+					adapter.Add (item);
 				}
 			} catch (Exception e) {
 				CreateAndShowDialog (e, "Error");
 			}
 
-			mTextNewToDo.Text = "";
+			textNewToDo.Text = "";
 		}
 
 		/// <summary>
@@ -205,16 +202,14 @@ namespace ZUMOAPPNAME
 			public async System.Threading.Tasks.Task<IServiceFilterResponse> Handle (IServiceFilterRequest request, IServiceFilterContinuation continuation)
 			{
 				// assumes always executes on UI thread
-				if (this.busyCount++ == 0 && this.BusyStateChange != null) {
-					this.BusyStateChange (true);
-				}
+				if (busyCount++ == 0 && BusyStateChange != null)
+					BusyStateChange (true);
 
 				var response = await continuation.Handle (request);
 
 				// assumes always executes on UI thread
-				if (--this.busyCount == 0 && this.BusyStateChange != null) {
-					this.BusyStateChange (false);
-				}
+				if (--busyCount == 0 && BusyStateChange != null)
+					BusyStateChange (false);
 
 				return response;
 			}

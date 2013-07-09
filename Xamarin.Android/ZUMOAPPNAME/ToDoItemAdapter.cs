@@ -8,62 +8,49 @@ namespace ZUMOAPPNAME
 {
 	public class ToDoItemAdapter : ArrayAdapter<ToDoItem>
 	{
-		Activity mContext;
+		Activity activity;
 
 		//Adapter View layout
-		int mLayoutResourceId;
+		int layoutResourceId;
 
-		public ToDoItemAdapter (Activity context, int layoutResourceId) :
-			base (context, layoutResourceId)
+		public ToDoItemAdapter (Activity activity, int layoutResourceId) :
+			base (activity, layoutResourceId)
 		{
-			mContext = context;
-			mLayoutResourceId = layoutResourceId;
+			this.activity = activity;
+			this.layoutResourceId = layoutResourceId;
 		}
 
 		//Returns the view for a specific item on the list
 		public override View GetView (int position, Android.Views.View convertView, Android.Views.ViewGroup parent)
 		{
 			var row = convertView;
-
-			ToDoItem currentItem = this.GetItem (position);
+			var currentItem = GetItem (position);
+			CheckBox checkBox;
 
 			if (row == null) {
-				var inflater = mContext.LayoutInflater;
-				row = inflater.Inflate (mLayoutResourceId, parent, false);
-			}
+				var inflater = activity.LayoutInflater;
+				row = inflater.Inflate (layoutResourceId, parent, false);
 
-			row.Tag = currentItem;
-			CheckBox checkBox = (CheckBox)row.FindViewById (Resource.Id.checkToDoItem);
+				checkBox = row.FindViewById <CheckBox>(Resource.Id.checkToDoItem);
+
+				checkBox.CheckedChange += (sender, e) => {
+					var cbSender = sender as CheckBox;
+					if (cbSender != null && cbSender.Tag is ToDoItem && cbSender.Checked) {
+						cbSender.Enabled = false;
+						if (activity is ToDoActivity)
+							((ToDoActivity)activity).CheckItem (cbSender.Tag as ToDoItem);
+					}
+				};
+			}
+			else
+				checkBox = row.FindViewById <CheckBox>(Resource.Id.checkToDoItem);
+
 			checkBox.Text = currentItem.Text;
 			checkBox.Checked = false;
 			checkBox.Enabled = true;
-
-			checkBox.SetOnCheckedChangeListener (new OnCheckedChangeWrapper ((buttonView, isChecked) => {
-				if (checkBox.Checked) {
-					if (mContext is ToDoActivity) {
-						((ToDoActivity)mContext).CheckItem (currentItem);
-					}
-				}
-			}));
+			checkBox.Tag = currentItem;
 
 			return row;
-		}
-
-		class OnCheckedChangeWrapper : Java.Lang.Object, CompoundButton.IOnCheckedChangeListener
-		{
-			Action <CompoundButton, bool> callback;
-
-			public OnCheckedChangeWrapper (Action <CompoundButton, bool> callback)
-			{
-				this.callback = callback;
-			}
-
-			#region IOnCheckedChangeListener implementation
-			public void OnCheckedChanged (CompoundButton buttonView, bool isChecked)
-			{
-				this.callback (buttonView, isChecked);
-			}
-			#endregion
 		}
 	}
 }

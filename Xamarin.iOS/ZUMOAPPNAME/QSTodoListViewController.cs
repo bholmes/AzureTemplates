@@ -13,7 +13,6 @@ namespace ZUMOAPPNAME
 
 		public QSTodoListViewController (IntPtr handle) : base (handle)
 		{
-
 		}
 
 		public override void ViewDidLoad ()
@@ -37,14 +36,13 @@ namespace ZUMOAPPNAME
 		async void RefreshAsync ()
 		{
 			// only activate the refresh control if the feature is available
-			if (this.useRefreshControl) {
-				this.RefreshControl.BeginRefreshing ();
-			}
-			await this.todoService.RefreshDataAsync ();
+			if (useRefreshControl)
+				RefreshControl.BeginRefreshing ();
 
-			if (this.useRefreshControl) {
-				this.RefreshControl.EndRefreshing ();
-			}
+			await todoService.RefreshDataAsync ();
+
+			if (useRefreshControl) 
+				RefreshControl.EndRefreshing ();
 
 			TableView.ReloadData ();
 		}
@@ -52,10 +50,10 @@ namespace ZUMOAPPNAME
 		#region UITableView methods
 		public override int RowsInSection (UITableView tableview, int section)
 		{
-			if (this.todoService.Items == null)
+			if (todoService.Items == null)
 				return 0;
 
-			return this.todoService.Items.Count;
+			return todoService.Items.Count;
 		}
 
 		public override int NumberOfSections (UITableView tableView)
@@ -66,14 +64,14 @@ namespace ZUMOAPPNAME
 		public override UITableViewCell GetCell (UITableView tableView, NSIndexPath indexPath)
 		{
 			const string CellIdentifier = @"Cell";
-			UITableViewCell cell = tableView.DequeueReusableCell (CellIdentifier);
+			var cell = tableView.DequeueReusableCell (CellIdentifier);
 			if (cell == null) {
 				cell = new UITableViewCell (UITableViewCellStyle.Default, CellIdentifier);
 			}
 
 			// Set the label on the cell and make sure the label color is black (in case this cell
 			// has been reused and was previously greyed out
-			UILabel label = (UILabel)cell.ViewWithTag (1);
+			var label = (UILabel)cell.ViewWithTag (1);
 			label.TextColor = UIColor.Black;
 			label.Text = todoService.Items [indexPath.Row].Text;
 
@@ -92,9 +90,8 @@ namespace ZUMOAPPNAME
 			var item = todoService.Items [indexPath.Row];
 
 			// If the item is complete, then this is just pending upload. Editing is not allowed
-			if (item.Complete) {
+			if (item.Complete)
 				return UITableViewCellEditingStyle.None;
-			}
 
 			// Otherwise, allow the delete button to appear
 			return UITableViewCellEditingStyle.Delete;
@@ -106,7 +103,7 @@ namespace ZUMOAPPNAME
 			var item = todoService.Items [indexPath.Row];
 
 			// Change the appearance to look greyed out until we remove the item
-			UILabel label = (UILabel)TableView.CellAt (indexPath).ViewWithTag (1);
+			var label = (UILabel)TableView.CellAt (indexPath).ViewWithTag (1);
 			label.TextColor = UIColor.Gray;
 
 			// Ask the todoService to set the item's complete value to YES, and remove the row if successful
@@ -124,7 +121,7 @@ namespace ZUMOAPPNAME
 			if (string.IsNullOrWhiteSpace (itemText.Text))
 				return;
 
-			var newItem = new TodoItem {
+			var newItem = new ToDoItem {
 				Text = itemText.Text, 
 				Complete = false
 			};
@@ -159,9 +156,9 @@ namespace ZUMOAPPNAME
 				// the refresh control is available, let's add it
 				RefreshControl = new UIRefreshControl ();
 				RefreshControl.ValueChanged += (sender, e) => {
-					this.RefreshAsync ();
+					RefreshAsync ();
 				};
-				this.useRefreshControl = true;
+				useRefreshControl = true;
 			}
 		}
 		#endregion
