@@ -53,19 +53,19 @@ namespace ZUMOAPPNAME
 		public void Add (ToDoItem item)
 		{
 			items.Add (item);
-			this.NotifyDataSetChanged ();
+			NotifyDataSetChanged ();
 		}
 
 		public void Clear ()
 		{
 			items.Clear ();
-			this.NotifyDataSetChanged ();
+			NotifyDataSetChanged ();
 		}
 
 		public void Remove (ToDoItem item)
 		{
 			items.Remove (item);
-			this.NotifyDataSetChanged ();
+			NotifyDataSetChanged ();
 		}
 
 		#region implemented abstract members of BaseAdapter
