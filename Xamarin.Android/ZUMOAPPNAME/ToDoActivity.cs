@@ -107,9 +107,9 @@ namespace ZUMOAPPNAME
 
 				adapter.Clear ();
 
-				foreach (ToDoItem current in list) {
+				foreach (ToDoItem current in list)
 					adapter.Add (current);
-				}
+
 			} catch (Exception e) {
 				CreateAndShowDialog (e, "Error");
 			}
@@ -129,9 +129,9 @@ namespace ZUMOAPPNAME
 			item.Complete = true;
 			try {
 				await toDoTable.UpdateAsync (item);
-				if (item.Complete) {
+				if (item.Complete)
 					adapter.Remove (item);
-				}
+
 			} catch (Exception e) {
 				CreateAndShowDialog (e, "Error");
 			}

@@ -2,56 +2,92 @@ using System;
 using Android.App;
 using Android.Views;
 using Android.Widget;
-
+using System.Collections.Generic;
 
 namespace ZUMOAPPNAME
 {
-	public class ToDoItemAdapter : ArrayAdapter<ToDoItem>
+	public class ToDoItemAdapter : BaseAdapter<ToDoItem>
 	{
 		Activity activity;
-
 		//Adapter View layout
 		int layoutResourceId;
+		List<ToDoItem> items = new List<ToDoItem> ();
 
-		public ToDoItemAdapter (Activity activity, int layoutResourceId) :
-			base (activity, layoutResourceId)
+		public ToDoItemAdapter (Activity activity, int layoutResourceId)
 		{
 			this.activity = activity;
 			this.layoutResourceId = layoutResourceId;
 		}
-
 		//Returns the view for a specific item on the list
 		public override View GetView (int position, Android.Views.View convertView, Android.Views.ViewGroup parent)
 		{
 			var row = convertView;
-			var currentItem = GetItem (position);
+			var currentItem = this [position];
 			CheckBox checkBox;
 
 			if (row == null) {
 				var inflater = activity.LayoutInflater;
 				row = inflater.Inflate (layoutResourceId, parent, false);
 
-				checkBox = row.FindViewById <CheckBox>(Resource.Id.checkToDoItem);
+				checkBox = row.FindViewById <CheckBox> (Resource.Id.checkToDoItem);
 
 				checkBox.CheckedChange += (sender, e) => {
 					var cbSender = sender as CheckBox;
-					if (cbSender != null && cbSender.Tag is ToDoItem && cbSender.Checked) {
+					if (cbSender != null && cbSender.Tag is ToDoItemWrapper && cbSender.Checked) {
 						cbSender.Enabled = false;
 						if (activity is ToDoActivity)
-							((ToDoActivity)activity).CheckItem (cbSender.Tag as ToDoItem);
+							((ToDoActivity)activity).CheckItem ((cbSender.Tag as ToDoItemWrapper).ToDoItem);
 					}
 				};
-			}
-			else
-				checkBox = row.FindViewById <CheckBox>(Resource.Id.checkToDoItem);
+			} else
+				checkBox = row.FindViewById <CheckBox> (Resource.Id.checkToDoItem);
 
 			checkBox.Text = currentItem.Text;
 			checkBox.Checked = false;
 			checkBox.Enabled = true;
-			checkBox.Tag = currentItem;
+			checkBox.Tag = new ToDoItemWrapper (currentItem);
 
 			return row;
 		}
+
+		public void Add (ToDoItem item)
+		{
+			items.Add (item);
+			this.NotifyDataSetChanged ();
+		}
+
+		public void Clear ()
+		{
+			items.Clear ();
+			this.NotifyDataSetChanged ();
+		}
+
+		public void Remove (ToDoItem item)
+		{
+			items.Remove (item);
+			this.NotifyDataSetChanged ();
+		}
+
+		#region implemented abstract members of BaseAdapter
+
+		public override long GetItemId (int position)
+		{
+			return this [position].Id;
+		}
+
+		public override int Count {
+			get {
+				return items.Count;
+			}
+		}
+
+		public override ToDoItem this [int position] {
+			get {
+				return items [position];
+			}
+		}
+
+		#endregion
 	}
 }
 
