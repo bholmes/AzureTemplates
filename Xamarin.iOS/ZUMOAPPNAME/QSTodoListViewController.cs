@@ -2,6 +2,7 @@
 using System;
 using MonoTouch.Foundation;
 using MonoTouch.UIKit;
+using System.Threading.Tasks;
 
 namespace ZUMOAPPNAME
 {
@@ -15,7 +16,7 @@ namespace ZUMOAPPNAME
 		{
 		}
 
-		public override void ViewDidLoad ()
+		public override async void ViewDidLoad ()
 		{
 			base.ViewDidLoad ();
 
@@ -28,12 +29,12 @@ namespace ZUMOAPPNAME
 					activityIndicator.StopAnimating ();
 			};
 
-			RefreshAsync ();
-
 			AddRefreshControl ();
+
+			await RefreshAsync ();
 		}
 
-		async void RefreshAsync ()
+		async Task RefreshAsync ()
 		{
 			// only activate the refresh control if the feature is available
 			if (useRefreshControl)
@@ -155,8 +156,8 @@ namespace ZUMOAPPNAME
 			if (UIDevice.CurrentDevice.CheckSystemVersion (6, 0)) {
 				// the refresh control is available, let's add it
 				RefreshControl = new UIRefreshControl ();
-				RefreshControl.ValueChanged += (sender, e) => {
-					RefreshAsync ();
+				RefreshControl.ValueChanged += async (sender, e) => {
+					await RefreshAsync ();
 				};
 				useRefreshControl = true;
 			}
