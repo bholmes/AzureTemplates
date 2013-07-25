@@ -51,7 +51,7 @@ namespace ZUMOAPPNAME
 		#region UITableView methods
 		public override int RowsInSection (UITableView tableview, int section)
 		{
-			if (todoService.Items == null)
+			if (todoService == null || todoService.Items == null)
 				return 0;
 
 			return todoService.Items.Count;
