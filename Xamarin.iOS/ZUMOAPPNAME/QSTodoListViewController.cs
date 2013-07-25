@@ -29,9 +29,9 @@ namespace ZUMOAPPNAME
 					activityIndicator.StopAnimating ();
 			};
 
-			AddRefreshControl ();
-
 			await RefreshAsync ();
+
+			AddRefreshControl ();
 		}
 
 		async Task RefreshAsync ()

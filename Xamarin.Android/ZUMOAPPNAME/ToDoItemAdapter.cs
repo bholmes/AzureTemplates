@@ -9,7 +9,6 @@ namespace ZUMOAPPNAME
 	public class ToDoItemAdapter : BaseAdapter<ToDoItem>
 	{
 		Activity activity;
-		//Adapter View layout
 		int layoutResourceId;
 		List<ToDoItem> items = new List<ToDoItem> ();
 
@@ -18,6 +17,7 @@ namespace ZUMOAPPNAME
 			this.activity = activity;
 			this.layoutResourceId = layoutResourceId;
 		}
+
 		//Returns the view for a specific item on the list
 		public override View GetView (int position, Android.Views.View convertView, Android.Views.ViewGroup parent)
 		{

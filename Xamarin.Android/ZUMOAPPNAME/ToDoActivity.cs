@@ -78,8 +78,6 @@ namespace ZUMOAPPNAME
 			} catch (Exception e) {
 				CreateAndShowDialog (e, "Error");
 			}
-
-
 		}
 
 		//Initializes the activity menu
@@ -122,10 +120,6 @@ namespace ZUMOAPPNAME
 			}
 		}
 
-		/// <summary>
-		/// Mark an item as completed
-		/// </summary>
-		/// <param name="item">The item to mark</param>
 		public async Task CheckItem (ToDoItem item)
 		{
 			if (client == null) {
@@ -144,10 +138,6 @@ namespace ZUMOAPPNAME
 			}
 		}
 
-		/// <summary>
-		/// Add a new item
-		/// </summary>
-		/// <param name="view">The view that originated the call</param>
 		[Java.Interop.Export()]
 		public async void AddItem (View view)
 		{
@@ -175,21 +165,11 @@ namespace ZUMOAPPNAME
 			textNewToDo.Text = "";
 		}
 
-		/// <summary>
-		/// Creates a dialog and shows it
-		/// </summary>
-		/// <param name="exception">The exception to show in the dialog</param>
-		/// <param name="title">The dialog title</param>
 		void CreateAndShowDialog (Exception exception, String title)
 		{
 			CreateAndShowDialog (exception.Message, title);
 		}
 
-		/// <summary>
-		/// Creates a dialog and shows it
-		/// </summary>
-		/// <param name="message">The dialog message</param>
-		/// <param name="title">The dialog title</param>
 		void CreateAndShowDialog (string message, string title)
 		{
 			AlertDialog.Builder builder = new AlertDialog.Builder (this);
