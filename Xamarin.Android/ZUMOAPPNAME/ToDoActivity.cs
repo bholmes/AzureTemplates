@@ -29,10 +29,8 @@ namespace ZUMOAPPNAME
 		//Progress spinner to use for table operations
 		private ProgressBar progressBar;
 
-		const string applicationURL = @"https://mobilltasky.azure-mobile.net/";
-		const string applicationKey = @"QFuPVQqUQNURoTUmsBCNkTJJTbumTe89";
-		//		const string applicationURL = @"ZUMOAPPURL";
-		//		const string applicationKey = @"ZUMOAPPKEY";
+		const string applicationURL = @"ZUMOAPPURL";
+		const string applicationKey = @"ZUMOAPPKEY";
 
 		protected override async void OnCreate (Bundle bundle)
 		{

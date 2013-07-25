@@ -9,10 +9,8 @@ namespace ZUMOAPPNAME
 	public class QSTodoService : IServiceFilter
 	{
 		static QSTodoService instance = new QSTodoService ();
-		const string applicationURL = @"https://mobilltasky.azure-mobile.net/";
-		const string applicationKey = @"QFuPVQqUQNURoTUmsBCNkTJJTbumTe89";
-		//const string applicationURL = @"ZUMOAPPURL";
-		//const string applicationKey = @"ZUMOAPPKEY";
+		const string applicationURL = @"ZUMOAPPURL";
+		const string applicationKey = @"ZUMOAPPKEY";
 		MobileServiceClient client;
 		IMobileServiceTable<ToDoItem> todoTable;
 		int busyCount = 0;
