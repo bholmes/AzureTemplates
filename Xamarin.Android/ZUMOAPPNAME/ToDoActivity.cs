@@ -4,6 +4,7 @@ using Android.App;
 using Android.Views;
 using Android.Widget;
 using Microsoft.WindowsAzure.MobileServices;
+using System.Threading.Tasks;
 
 
 namespace ZUMOAPPNAME
@@ -33,7 +34,7 @@ namespace ZUMOAPPNAME
 		//		const string applicationURL = @"ZUMOAPPURL";
 		//		const string applicationKey = @"ZUMOAPPKEY";
 
-		protected override void OnCreate (Bundle bundle)
+		protected override async void OnCreate (Bundle bundle)
 		{
 			base.OnCreate (bundle);
 
@@ -70,7 +71,7 @@ namespace ZUMOAPPNAME
 				listViewToDo.Adapter = adapter;
 
 				// Load the items from the Mobile Service
-				RefreshItemsFromTable ();
+				await RefreshItemsFromTableAsync ();
 
 			} catch (Java.Net.MalformedURLException) {
 				CreateAndShowDialog (new Exception ("There was an error creating the Mobile Service. Verify the URL"), "Error");
@@ -92,13 +93,19 @@ namespace ZUMOAPPNAME
 		public override bool OnOptionsItemSelected (IMenuItem item)
 		{
 			if (item.ItemId == Resource.Id.menu_refresh) {
-				RefreshItemsFromTable ();
+				OnRefreshItemsSelected ();
 			}
 			return true;
 		}
 
+		// Called when the refresh menu opion is selected
+		async void OnRefreshItemsSelected ()
+		{
+			await RefreshItemsFromTableAsync ();
+		}
+
 		//Refresh the list with the items in the Mobile Service Table
-		async void RefreshItemsFromTable ()
+		async Task RefreshItemsFromTableAsync ()
 		{
 			try {
 				// Get the items that weren't marked as completed and add them in the
@@ -119,7 +126,7 @@ namespace ZUMOAPPNAME
 		/// Mark an item as completed
 		/// </summary>
 		/// <param name="item">The item to mark</param>
-		public async void CheckItem (ToDoItem item)
+		public async Task CheckItem (ToDoItem item)
 		{
 			if (client == null) {
 				return;
