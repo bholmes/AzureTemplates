@@ -33,12 +33,12 @@ namespace ZUMOAPPNAME
 
 				checkBox = row.FindViewById <CheckBox>(Resource.Id.checkToDoItem);
 
-				checkBox.CheckedChange += (sender, e) => {
+				checkBox.CheckedChange += async (sender, e) => {
 					var cbSender = sender as CheckBox;
 					if (cbSender != null && cbSender.Tag is ToDoItem && cbSender.Checked) {
 						cbSender.Enabled = false;
 						if (activity is ToDoActivity)
-							((ToDoActivity)activity).CheckItem (cbSender.Tag as ToDoItem);
+							await ((ToDoActivity)activity).CheckItem (cbSender.Tag as ToDoItem);
 					}
 				};
 			}
