@@ -39,7 +39,7 @@
         </EditText>
         <Button
             android:id="@+id/buttonAddToDo"
-            android:layout_width="64dip"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:onClick="AddItem"
             android:text="@string/add_button_text" />
